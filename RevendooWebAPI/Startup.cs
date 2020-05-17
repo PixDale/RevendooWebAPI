@@ -26,6 +26,18 @@ namespace RevendooWebAPI
         {
             var connection = Configuration.GetConnectionString("RevendooDatabase");
             services.AddDbContextPool<revendoodbContext>(options => options.UseSqlServer(connection));
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("myPolicy",
+                builder =>
+                {
+                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                });
+            });
+
+
+
             services.AddControllers();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -61,9 +73,11 @@ namespace RevendooWebAPI
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
-
             app.UseRouting();
+
+            app.UseCors("myPolicy");
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
